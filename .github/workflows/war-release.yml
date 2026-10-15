@@ -29,8 +29,8 @@ jobs:
               --notes "Deployment options:
 
           - oie-webadmin.war: embedded OIE deployment
-          - gibson9583/oie-web-client: Docker deployment
-          - repository source: standalone Node.js deployment" "${extra[@]}"
+          - oie-webadmin-node.tar.gz: standalone Node.js deployment
+          - gibson9583/oie-web-client: Docker deployment" "${extra[@]}"
           fi
           mkdir existing
           for file in release-artifacts/*; do
