@@ -58,9 +58,6 @@ export declare function requireFields(properties: any, specs: RequiredFieldSpec[
 export declare function listenerAddressField(hostKey: string, label?: string): FormField;
 export declare function mapEntries(map: any): Array<[string, string]>;
 export declare function writeMapEntries(map: any, rows: Array<[string, string]>, shape?: 'string' | 'list'): any;
-export declare function buildForm(host: HTMLElement, properties: any, fields: FormField[], onChange: () => void): {
-    repaint: () => void;
-};
 export declare function asBool(value: any): boolean;
 export declare function portsInUseButton({ disabled }?: {
     disabled?: boolean;
