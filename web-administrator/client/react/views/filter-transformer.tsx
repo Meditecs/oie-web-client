@@ -52,7 +52,7 @@ import { normalizeLineEndings } from '../../core/content-highlight.js';
 import * as router from '../../core/router.js';
 import { routeUrl } from '../../core/deployment.js';
 import { registerUnsavedCheck } from '../../core/unsaved.js';
-import { setActiveScope, clearActiveScope, referencesFor, dropTextFor, cleanDesc } from '../../core/script-completions.js';
+import { setActiveScope, clearActiveScope, referencesFor, dropTextFor, cleanDesc, templateCompletionCode } from '../../core/script-completions.js';
 import { serializeTemplate, validateScript } from '../../core/serialize.js';
 import { dataTypeDef, dataTypeList, normalizeDataTypeProperties } from '../../datatypes/index.js';
 import { DataTypePropertiesEditor } from '../../datatypes/props-editor.jsx';
@@ -698,7 +698,7 @@ function ReferenceTab({ dragRef, channelId, context, getElements }: any) {
                             entries.push({
                                 name: t.name, category: name,
                                 description: t.description,
-                                code: (t.properties && t.properties.code) || '',
+                                code: templateCompletionCode(t),
                                 // Drag behavior is driven by the template type
                                 // (FUNCTION / DRAG_AND_DROP_CODE / COMPILED_CODE).
                                 type: (t.properties && t.properties.type) || 'DRAG_AND_DROP_CODE'
@@ -1893,7 +1893,7 @@ function EditorBody({ params, kindName, onTasksChange, apiRef, embedded }: any) 
                     code view can hide it and let the editor fill the column while
                     the right reference panel stays put. */}
                 <div className="split-a split vertical flex-1 min-w-0">
-                    <div className="split-a h-[40%] flex-none p-[13px] pb-2" data-editor-overtake="">
+                    <div className="split-a element-list-pane flex-none p-[13px] pb-2" data-editor-overtake="">
                         {/* Fills the pane so right-clicking anywhere in the step
                             area (not just on a row) opens the context menu. */}
                         <div className="min-h-full panel overflow-auto" onContextMenu={gridContextMenu}>
@@ -1926,7 +1926,7 @@ function EditorBody({ params, kindName, onTasksChange, apiRef, embedded }: any) 
                             },
                             {
                                 label: 'Generated Script',
-                                className: 'py-3 px-3.5',
+                                className: 'h-full flex-col min-h-0 py-3 px-3.5',
                                 node: <GeneratedScriptPane kind={kind} element={selectedElement} rev={rev} />
                             }
                         ]} />
