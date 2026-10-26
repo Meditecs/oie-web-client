@@ -31,6 +31,7 @@ export interface FormField {
     language?: string | ((properties: any) => string);
     rows?: number;
     numeric?: boolean;
+    step?: number,
     mapShape?: 'string' | 'list';
     /** Full-width control (label above). */
     span?: boolean;

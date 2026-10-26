@@ -47,7 +47,7 @@ const DEFAULT_WIDTHS = {
     select: '220px'
 };
 let cformUid = 0;
-function NumericTemplatableInput({ value, disabled, placeholder, style, dataFkey, templatable = true, step = 1, min, max, width = DEFAULT_WIDTHS.number, textWidth = DEFAULT_WIDTHS.text, onChange, }) {
+function NumericTemplatableInput({ value, disabled, placeholder, style, dataFkey, templatable = false, step = 1, min, max, width = DEFAULT_WIDTHS.number, textWidth = DEFAULT_WIDTHS.text, onChange, }) {
     const rawStr = value === null || value === undefined ? '' : String(value);
     const isEmpty = rawStr.trim() === '';
     const isNumeric = !isEmpty && !isNaN(Number(rawStr));
@@ -55,6 +55,16 @@ function NumericTemplatableInput({ value, disabled, placeholder, style, dataFkey
     const currentWidth = isText ? textWidth : width;
     const showCustomArrows = !disabled && (!templatable || isNumeric);
     const handleStep = (direction) => {
+        function getDecimalPlaces(val) {
+            const str = String(val);
+            if (str.includes('e-')) {
+                const [, exp] = str.split('e-');
+                return parseInt(exp, 10);
+            }
+            const dot = str.indexOf('.');
+            return dot === -1 ? 0 : str.length - dot - 1;
+        }
+        ;
         if (disabled)
             return;
         const current = isNumeric ? Number(rawStr) : (min !== undefined ? min : 0);
@@ -63,7 +73,14 @@ function NumericTemplatableInput({ value, disabled, placeholder, style, dataFkey
             next = min;
         if (max !== undefined && next > max)
             next = max;
-        onChange(String(next));
+        // Calculate the required precision based on current content and step size
+        const precision = Math.max(getDecimalPlaces(rawStr), getDecimalPlaces(step));
+        let formatted = next.toFixed(precision);
+        // Normalize "-0.00" to "0.00"
+        if (Number(formatted) === 0) {
+            formatted = (0).toFixed(precision);
+        }
+        onChange(formatted);
     };
     const handleKeyDown = (e) => {
         if (disabled)
@@ -300,7 +317,7 @@ function FieldRow({ properties, field, onChange, repaint }) {
             break;
         }
         case 'number':
-            control = (React.createElement(NumericTemplatableInput, { value: value, dataFkey: f.key, placeholder: f.placeholder, width: f.width || DEFAULT_WIDTHS.number, textWidth: f.textWidth || DEFAULT_WIDTHS.text, disabled: disabled, templatable: f.templatable ?? true, step: f.step, min: f.min, max: f.max, onChange: (v) => set(v) }));
+            control = (React.createElement(NumericTemplatableInput, { value: value, dataFkey: f.key, placeholder: f.placeholder, width: f.width || DEFAULT_WIDTHS.number, textWidth: f.textWidth || DEFAULT_WIDTHS.text, disabled: disabled, templatable: f.templatable, step: f.step, min: f.min, max: f.max, onChange: (v) => set(v) }));
             break;
         case 'select':
             control = (React.createElement("select", { value: value ?? '', "data-fkey": f.key, style: inputStyle, disabled: disabled, onChange: (e) => set(f.numeric ? parseInt(e.target.value, 10) : e.target.value) }, (typeof f.options === 'function' ? f.options(properties) : f.options || []).map((opt, i) => {

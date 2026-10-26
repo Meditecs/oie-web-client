@@ -78,7 +78,7 @@ function NumericTemplatableInput({
     placeholder,
     style,
     dataFkey,
-    templatable = true,
+    templatable = false,
     step = 1,
     min,
     max,
@@ -95,6 +95,16 @@ function NumericTemplatableInput({
     const showCustomArrows = !disabled && (!templatable || isNumeric);
 
     const handleStep = (direction: 1 | -1) => {
+        function getDecimalPlaces(val: string | number): number {
+            const str = String(val);
+            if (str.includes('e-')) {
+                const [, exp] = str.split('e-');
+                return parseInt(exp, 10);
+            }
+            const dot = str.indexOf('.');
+            return dot === -1 ? 0 : str.length - dot - 1;
+        };
+
         if (disabled) return;
         const current = isNumeric ? Number(rawStr) : (min !== undefined ? min : 0);
         let next = current + direction * step;
@@ -102,7 +112,17 @@ function NumericTemplatableInput({
         if (min !== undefined && next < min) next = min;
         if (max !== undefined && next > max) next = max;
 
-        onChange(String(next));
+        // Calculate the required precision based on current content and step size
+        const precision = Math.max(getDecimalPlaces(rawStr), getDecimalPlaces(step));
+
+        let formatted = next.toFixed(precision);
+
+        // Normalize "-0.00" to "0.00"
+        if (Number(formatted) === 0) {
+            formatted = (0).toFixed(precision);
+        }
+
+        onChange(formatted);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -402,7 +422,7 @@ function FieldRow({ properties, field, onChange, repaint }: { properties: any; f
                     width={f.width || DEFAULT_WIDTHS.number}
                     textWidth={f.textWidth || DEFAULT_WIDTHS.text}
                     disabled={disabled}
-                    templatable={f.templatable ?? true}
+                    templatable={f.templatable}
                     step={f.step}
                     min={f.min}
                     max={f.max}
