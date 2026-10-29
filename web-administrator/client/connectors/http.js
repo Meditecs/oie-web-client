@@ -160,6 +160,11 @@ const httpListener = {
                 { section: 'HTTP Listener Settings' },
                 { key: 'contextPath', label: 'Base Context Path', type: 'text', width: '320px', placeholder: '/' },
                 { key: 'timeout', label: 'Receive Timeout (ms)', type: 'number', templatable: true, width: '120px' },
+                {
+                    key: 'requestHeaderSize', label: 'Request Header Size (bytes)', type: 'number', templatable: true, width: '160px',
+                    visible: hasRequestHeaderSize, placeholder: '8192',
+                    tooltip: 'Maximum combined request header size in bytes. Defaults to 8192 when unset. Accepts template substitutions and must resolve to a positive integer. Larger requests are rejected with HTTP 431 before reaching the channel.'
+                },
                 { key: 'xmlBody', label: 'Message Content', type: 'radio', refresh: true, options: [
                         { value: false, label: 'Plain Body' },
                         { value: true, label: 'XML Body' }
