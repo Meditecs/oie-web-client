@@ -89,10 +89,13 @@ function NumericTemplatableInput({
     const rawStr = value === null || value === undefined ? '' : String(value);
     const isEmpty = rawStr.trim() === '';
     const isNumeric = !isEmpty && !isNaN(Number(rawStr));
-    const isText = templatable && !isEmpty && !isNumeric;
+    const isText = !isEmpty && !isNumeric;
 
+    // Use textWidth if it contains template/text (even on legacy non-templatable fields)
     const currentWidth = isText ? textWidth : width;
-    const showCustomArrows = !disabled && (!templatable || isNumeric);
+    
+    // Only show arrows if not disabled and the field currently holds a numeric value
+    const showStepArrows = !disabled && isNumeric;
 
     const handleStep = (direction: 1 | -1) => {
         function getDecimalPlaces(val: string | number): number {
@@ -105,19 +108,15 @@ function NumericTemplatableInput({
             return dot === -1 ? 0 : str.length - dot - 1;
         };
 
-        if (disabled) return;
-        const current = isNumeric ? Number(rawStr) : (min !== undefined ? min : 0);
+        const current = Number(rawStr);
         let next = current + direction * step;
 
         if (min !== undefined && next < min) next = min;
         if (max !== undefined && next > max) next = max;
 
-        // Calculate the required precision based on current content and step size
         const precision = Math.max(getDecimalPlaces(rawStr), getDecimalPlaces(step));
-
         let formatted = next.toFixed(precision);
 
-        // Normalize "-0.00" to "0.00"
         if (Number(formatted) === 0) {
             formatted = (0).toFixed(precision);
         }
@@ -126,7 +125,6 @@ function NumericTemplatableInput({
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (disabled) return;
         if (e.key === 'ArrowUp') {
             e.preventDefault();
             handleStep(1);
@@ -166,11 +164,11 @@ function NumericTemplatableInput({
                 style={{
                     width: '100%',
                     boxSizing: 'border-box',
-                    paddingRight: showCustomArrows ? '20px' : undefined,
+                    paddingRight: showStepArrows ? '20px' : undefined,
                 }}
             />
 
-            {showCustomArrows && (
+            {showStepArrows && (
                 <div
                     style={{
                         position: 'absolute',
