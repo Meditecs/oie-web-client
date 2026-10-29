@@ -184,7 +184,7 @@ const tcpSender = {
                     { key: 'sendTimeout', label: 'Send Timeout (ms)', type: 'number', width: '90px', disabled: sendDisabled },
                     { key: 'bufferSize', label: 'Buffer Size (bytes)', type: 'number', width: '90px' },
                     {
-                        key: 'responseTimeout', label: 'Response Timeout (ms)', type: 'number', templatable: true, width: '90px',
+                        key: 'responseTimeout', label: 'Response Timeout (ms)', type: 'number', width: '90px',
                         // Swing pairs the Ignore Response checkbox inline with Response Timeout;
                         // it gates Queue on Response Timeout below.
                         append: (p, ctx) => checkbox('Ignore Response', asBool(p.ignoreResponse), {
